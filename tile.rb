@@ -4,6 +4,5 @@ class Tile
   def initialize(value)
     @value = value
     @revealed = false
-    @neighbors = nil
   end
 end
