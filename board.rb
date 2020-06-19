@@ -27,6 +27,20 @@ class Board
     end
   end
 
+  def include_adj
+    # debugger
+    indices = (0...@size).to_a
+    coords = indices.product(indices)
+    coords.each do |coord|
+      row, col = coord
+      tile = self[row, col]
+      if tile.value == :empty
+        tile.value = adj_bombs(row, col)
+        puts "found one!"
+      end 
+    end
+  end
+
   def [](row, col)
     @grid[row][col]
   end
@@ -85,10 +99,7 @@ class Board
       output = []
       row.each do |tile|
         if tile.revealed
-          # this is okay for testing at the moment, as
-          # no methods to update the values have been
-          # set to trigger automatically
-          tile.value == :bomb ? output << "B" : output << "e"
+          tile.value == :bomb ? output << "B" : output << tile.value
         else
           output << "_"
         end
