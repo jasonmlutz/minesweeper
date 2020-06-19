@@ -1,8 +1,8 @@
-# Minesweeper.rb#
+# Minesweeper.rb #
 
 ##### App Academy Open project #####
 
-## Initial Project Roadmap ##
+### Initial Project Roadmap ###
 
 1. What is the goal of the project?
     - Build a functional minesweeper clone
