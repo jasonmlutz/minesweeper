@@ -53,9 +53,12 @@ class Board
   end
 
   def adj_bombs(row, col)
+    # debugger
     adj_rows = grid_intersect((row-1..row+1).to_a)
     adj_cols = grid_intersect((col-1..col+1).to_a)
-    adj_coords = adj_rows.product(adj_cols).delete([row, col])
+    adj_coords = adj_rows.product(adj_cols)
+    debugger
+    adj_coords.delete([row, col])
 
     tiles = grid_select(adj_coords)
     tiles.count { |tile| tile.value == :bomb}
@@ -65,11 +68,15 @@ class Board
     @grid.flatten.count { |el| el.value == :bomb }
   end
 
-  def cheat
+  def reveal_all
     @grid.each do |row|
-      row.each do |tile|
-        tile.revealed = true
-      end
+      row.each { |tile| tile.revealed = true }
+    end
+  end
+
+  def hide_all
+    @grid.each do |row|
+      row.each { |tile| tile.revealed = false }
     end
   end
 
@@ -79,7 +86,10 @@ class Board
       output = []
       row.each do |tile|
         if tile.revealed
-          tile.value == :bomb ? output << "B" : output << tile.value
+          # this is okay for testing at the moment, as
+          # no methods to update the values have been
+          # set to trigger automatically
+          tile.value == :bomb ? output << "B" : output << "e"
         else
           output << "_"
         end
