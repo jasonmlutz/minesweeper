@@ -1,9 +1,10 @@
 require_relative "tile"
+require "byebug"
 
 class Board
   attr_reader :grid
 
-  def initialize(size = 9)
+  def initialize(size = 10)
     @size = size
     @grid = generate_grid
   end
@@ -14,7 +15,7 @@ class Board
     }
   end
 
-  def random_seed(size = 3)
+  def random_seed(size = 10)
     (0...size).to_a.sample
   end
 
@@ -35,6 +36,21 @@ class Board
       row.each do |tile|
         tile.revealed = true
       end
+    end
+  end
+
+  def render
+    # debugger
+    @grid.each do |row|
+      output = []
+      row.each do |tile|
+        if tile.revealed
+          tile.value == :bomb ? output << "B" : output << tile.value
+        else
+          output << "_"
+        end
+      end
+      puts output.join("")
     end
   end
 
