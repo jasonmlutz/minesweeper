@@ -6,10 +6,10 @@ class Board
 
   def initialize(size = 10)
     @size = size
-    @grid = generate_grid
+    @grid = populate(blank_grid)
   end
 
-  def generate_grid
+  def blank_grid
     Array.new (@size) {
       Array.new(@size) {nil}
     }
@@ -19,8 +19,8 @@ class Board
     (0...size).to_a.sample
   end
 
-  def populate_grid
-    @grid.each do |row|
+  def populate(grid)
+    grid.each do |row|
       row.map! do |el|
         random_seed == 0 ? Tile.new(:bomb) : Tile.new(:empty)
       end
@@ -57,7 +57,6 @@ class Board
     adj_rows = grid_intersect((row-1..row+1).to_a)
     adj_cols = grid_intersect((col-1..col+1).to_a)
     adj_coords = adj_rows.product(adj_cols)
-    debugger
     adj_coords.delete([row, col])
 
     tiles = grid_select(adj_coords)
