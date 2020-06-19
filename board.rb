@@ -27,6 +27,10 @@ class Board
     end
   end
 
+  def [](row, col)
+    @grid[row][col]
+  end
+
   def count_bombs
     @grid.flatten.count { |el| el.value == :bomb }
   end
