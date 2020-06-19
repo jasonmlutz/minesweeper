@@ -30,4 +30,12 @@ class Board
     @grid.flatten.count { |el| el.value == :bomb }
   end
 
+  def cheat
+    @grid.each do |row|
+      row.each do |tile|
+        tile.revealed = true
+      end
+    end
+  end
+
 end
