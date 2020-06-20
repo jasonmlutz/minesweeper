@@ -25,6 +25,7 @@ class Board
 
   # TODO rework this random portion so that *exactly* 10 
   # elements are bombs
+  # DONE
   def random_seed(size = 10)
     @coords.sample(size)
   end
@@ -35,10 +36,10 @@ class Board
   end
 
   def populate(grid)
-    bomb_locations = random_seed
+    @bomb_locations = random_seed
     @coords.each do |pos|
       row, col = pos
-      grid[row][col] = (bomb_locations.include?(pos) ? Tile.new(:bomb) : Tile.new(:empty))
+      grid[row][col] = (@bomb_locations.include?(pos) ? Tile.new(:bomb) : Tile.new(:empty))
     end
     grid
   end
@@ -99,7 +100,16 @@ class Board
   end
 
   def count_hidden_squares
-    @grid.flatten.count { |el| el.revealed == true }
+    @grid.flatten.count { |el| el.revealed == false }
+  end
+  
+  def cheat
+    @bomb_locations.each do |pos|
+      row, col = pos
+      tile = self[row, col]
+      tile.reveal
+    end
+    self.render
   end
 
   def reveal_all
@@ -175,7 +185,10 @@ class Board
       to_cascade += adj_emptys
       completed << el
     end
+  end
 
+  def won?
+    count_bombs == count_hidden_squares
   end
 
 end
