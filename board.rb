@@ -5,8 +5,9 @@ class Board
   # TODO is this needed?
   attr_reader :grid
 
-  def initialize(size = 10)
+  def initialize(size = 10, difficulty = 1)
     @size = size
+    @difficulty = difficulty
     @coords = generate_coords
     @grid = populate(blank_grid)
     include_adj
@@ -26,8 +27,8 @@ class Board
   # TODO rework this random portion so that *exactly* 10 
   # elements are bombs
   # DONE
-  def random_seed(size = 10)
-    @coords.sample(size)
+  def random_seed
+    @coords.sample(@size*@difficulty)
   end
 
   # TODO inputs should be all (row, col) or all pos = [row, col]
@@ -189,6 +190,24 @@ class Board
 
   def won?
     count_bombs == count_hidden_squares
+  end
+
+  def reveal(pos)
+    # TODO give "error" message if tile to be revealed is
+    # already revealed.
+    row, col = pos
+    tile = self[row, col]
+    tile.reveal
+    value = tile.value
+    case value
+    when :bomb
+      return false
+    when 0
+      cascade[pos]
+      return true
+    else
+      return true
+    end
   end
 
 end
