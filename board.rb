@@ -113,12 +113,14 @@ class Board
     # self.render
   end
 
+  # TODO delete?
   def reveal_all
     @grid.each do |row|
       row.each { |tile| tile.reveal }
     end
   end
 
+  # TODO delete?
   def hide_all
     @grid.each do |row|
       row.each { |tile| tile.hide }
@@ -130,7 +132,11 @@ class Board
   end
 
   def render
+<<<<<<< Updated upstream
     # debugger
+=======
+    # TODO include line numbers (0..9) in display
+>>>>>>> Stashed changes
     puts hline
     @grid.each do |row|
       output = []

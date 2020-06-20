@@ -1,4 +1,5 @@
 class Tile
+  # TODO implement @display_value to allow for flags
   attr_accessor :value
   attr_reader :revealed
 
@@ -14,5 +15,5 @@ class Tile
   def hide
     @revealed = false
   end
-  
+
 end
