@@ -65,13 +65,19 @@ class Board
     tiles
   end
 
-  def adj_bombs(row, col)
-    # debugger
+  def coords_adj_tiles(pos)
+    row, col = pos
     adj_rows = grid_intersect((row-1..row+1).to_a)
     adj_cols = grid_intersect((col-1..col+1).to_a)
     adj_coords = adj_rows.product(adj_cols)
     adj_coords.delete([row, col])
+    
+    adj_coords
+  end
 
+  def adj_bombs(row, col)
+    pos = row, col
+    adj_coords = coords_adj_tiles(pos)
     tiles = grid_select(adj_coords)
     tiles.count { |tile| tile.value == :bomb}
   end
@@ -112,5 +118,9 @@ class Board
       puts hline
     end
   end
+
+  # def cascade(pos)
+  #   row, col = pos
+  # end
 
 end
