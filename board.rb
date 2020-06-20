@@ -43,6 +43,7 @@ class Board
     end
   end
 
+  # TODO inputs should be all (row, col) or all pos = [row, col]
   def [](row, col)
     @grid[row][col]
   end
@@ -112,11 +113,21 @@ class Board
     @grid.each do |row|
       output = []
       row.each do |tile|
-        if tile.revealed && tile.value != 0
-          tile.value == :bomb ? output << "B" : output << tile.value
+        # TODO cases?
+        if tile.revealed
+          if (tile.value).is_a?(Integer)
+            output << (tile.value > 0 ? tile.value : " ")
+          elsif tile.value == :bomb
+            output << "B"
+          end
         else
-          output << " "
+          output << "*"
         end
+        # output << "*" if !tile.revealed
+        # output << 
+        # if tile.revealed && tile.value != 0
+        #   tile.value == :bomb ? output << "B" : output << tile.value
+        # else
       end
       puts "|" + output.join("|") + "|"
       puts hline
@@ -137,16 +148,19 @@ class Board
   end
 
   def cascade(pos)
-    @to_cascade = [pos]
-    @already_cascaded = []
+    # debugger
+    to_cascade = [pos]
+    completed = []
 
-    @to_cascade.each do |el|
-      next if @already_cascaded.include?(el)
+    to_cascade.each do |el|
+      next if completed.include?(el)
       adj_emptys = cascade_prep(el)
-      @to_cascade += adj_emptys
-      @already_cascaded << el
+      to_cascade += adj_emptys
+      completed << el
     end
 
   end
 
 end
+
+# load "board.rb"; board = Board.new; board.reveal_all; board.render; board.hide_all;
