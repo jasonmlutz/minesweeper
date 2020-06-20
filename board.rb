@@ -92,18 +92,24 @@ class Board
     end
   end
 
+  def hline
+    " -"*@size + " "
+  end
+
   def render
     # debugger
+    puts hline
     @grid.each do |row|
       output = []
       row.each do |tile|
-        if tile.revealed
+        if tile.revealed && tile.value != 0
           tile.value == :bomb ? output << "B" : output << tile.value
         else
-          output << "_"
+          output << " "
         end
       end
-      puts output.join("")
+      puts "|" + output.join("|") + "|"
+      puts hline
     end
   end
 
