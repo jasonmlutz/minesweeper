@@ -2,6 +2,7 @@ require_relative "tile"
 require "byebug"
 
 class Board
+  # TODO is this needed?
   attr_reader :grid
 
   def initialize(size = 10)
@@ -16,6 +17,8 @@ class Board
     }
   end
 
+  # TODO rework this random portion so that *exactly* 10 
+  # elements are bombs
   def random_seed(size = 10)
     (0...size).to_a.sample
   end
