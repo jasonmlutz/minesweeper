@@ -70,6 +70,7 @@ class Board
     adj_rows = grid_intersect((row-1..row+1).to_a)
     adj_cols = grid_intersect((col-1..col+1).to_a)
     adj_coords = adj_rows.product(adj_cols)
+    # strictly adjacent
     adj_coords.delete([row, col])
     
     adj_coords
@@ -88,13 +89,13 @@ class Board
 
   def reveal_all
     @grid.each do |row|
-      row.each { |tile| tile.revealed = true }
+      row.each { |tile| tile.reveal }
     end
   end
 
   def hide_all
     @grid.each do |row|
-      row.each { |tile| tile.revealed = false }
+      row.each { |tile| tile.hide }
     end
   end
 
@@ -119,8 +120,30 @@ class Board
     end
   end
 
-  # def cascade(pos)
-  #   row, col = pos
-  # end
+  def cascade_prep(pos)
+    to_cascade = []
+    adj_coords = coords_adj_tiles(pos)
+    adj_coords.each do |pos|
+      row, col = pos
+      tile = self[row, col]
+      tile.reveal if (tile.value).is_a?(Integer)
+      to_cascade << pos if tile.value == 0
+    end
+
+    to_cascade
+  end
+
+  def cascade(pos)
+    @to_cascade = [pos]
+    @already_cascaded = []
+
+    @to_cascade.each do |el|
+      next if @already_cascaded.include?(el)
+      adj_emptys = cascade_prep(el)
+      @to_cascade += adj_emptys
+      @already_cascaded << el
+    end
+
+  end
 
 end
