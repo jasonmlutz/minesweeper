@@ -2,8 +2,6 @@ require_relative "tile"
 require "byebug"
 
 class Board
-  # TODO is this needed?
-  attr_reader :grid
 
   def initialize(size = 10, difficulty = 1)
     @size = size
@@ -24,9 +22,6 @@ class Board
     }
   end
 
-  # TODO rework this random portion so that *exactly* 10 
-  # elements are bombs
-  # DONE
   def random_seed
     @coords.sample(@size*@difficulty)
   end
@@ -62,32 +57,18 @@ class Board
   end
 
   def coords_adj_tiles(pos)
-    # returns the 3x3 grid with center pos
-    # intersected with @grid, e.g [0,0] -> 4 elements
     row, col = pos
     adj_rows = grid_intersect((row-1..row+1).to_a)
     adj_cols = grid_intersect((col-1..col+1).to_a)
     adj_coords = adj_rows.product(adj_cols)
-    # strictly adjacent
-    # adj_coords.delete([row, col])
-    # not needed; when called for adj bomb count,
-    # only called if tile.vaule == :empty
     adj_coords
   end
 
   def grid_intersect(arr_of_indices)
-    # arr is expected to be a one-dimensional array
-    # which could represent a subset of the row/column
-    # indices of @grid
-    # 
-    # this method returns only those indices
-    # that are within the range to be indices for
-    # a row/column of @grid
     arr_of_indices.intersection((0...@size).to_a)
   end
 
   def grid_select(arr_of_coords)
-    # returns the tiles of @grid which are at the given coords
     tiles = []
     arr_of_coords.each do |coords|
       row, col = coords
@@ -110,7 +91,6 @@ class Board
       tile = self[row, col]
       tile.reveal
     end
-    # self.render
   end
 
   def reveal_all
@@ -130,12 +110,10 @@ class Board
   end
 
   def render
-    # debugger
     puts hline
     @grid.each do |row|
       output = []
       row.each do |tile|
-        # TODO cases?
         if tile.revealed
           case tile.value
           when 0
@@ -155,12 +133,6 @@ class Board
   end
 
   def cascade_prep(pos)
-    # This method returns the coords of all "empty" tiles
-    # adjacent to (and including) tile at pos,
-    # where "empty" means tile.value == 0.
-    # 
-    # This method also reveals all adjacent tiles
-    # which are not bombs.
     pass_to_cascade = []
     adj_coords = coords_adj_tiles(pos)
     adj_coords.each do |pos|
@@ -217,5 +189,3 @@ class Board
   end
 
 end
-
-# load "board.rb"; board = Board.new; board.reveal_all; board.render; board.hide_all;
