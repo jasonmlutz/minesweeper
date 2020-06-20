@@ -7,8 +7,14 @@ class Board
 
   def initialize(size = 10)
     @size = size
+    @coords = generate_coords
     @grid = populate(blank_grid)
     include_adj
+  end
+
+  def generate_coords
+    indices = (0...@size).to_a
+    coords = indices.product(indices)
   end
 
   def blank_grid
@@ -20,32 +26,51 @@ class Board
   # TODO rework this random portion so that *exactly* 10 
   # elements are bombs
   def random_seed(size = 10)
-    (0...size).to_a.sample
-  end
-
-  def populate(grid)
-    grid.each do |row|
-      row.map! do |el|
-        random_seed == 0 ? Tile.new(:bomb) : Tile.new(:empty)
-      end
-    end
-  end
-
-  def include_adj
-    indices = (0...@size).to_a
-    coords = indices.product(indices)
-    coords.each do |coord|
-      row, col = coord
-      tile = self[row, col]
-      if tile.value == :empty
-        tile.value = adj_bombs(row, col)
-      end 
-    end
+    @coords.sample(size)
   end
 
   # TODO inputs should be all (row, col) or all pos = [row, col]
   def [](row, col)
     @grid[row][col]
+  end
+
+  def populate(grid)
+    bomb_locations = random_seed
+    @coords.each do |pos|
+      row, col = pos
+      grid[row][col] = (bomb_locations.include?(pos) ? Tile.new(:bomb) : Tile.new(:empty))
+    end
+    grid
+  end
+
+  def include_adj
+    @coords.each do |pos|
+      row, col = pos
+      tile = self[row, col]
+      if tile.value == :empty
+        tile.value = adj_bombs(pos)
+      end 
+    end
+  end
+
+  def adj_bombs(pos)
+    adj_coords = coords_adj_tiles(pos)
+    tiles = grid_select(adj_coords)
+    output = tiles.count { |tile| tile.value == :bomb}
+  end
+
+  def coords_adj_tiles(pos)
+    # returns the 3x3 grid with center pos
+    # intersected with @grid, e.g [0,0] -> 4 elements
+    row, col = pos
+    adj_rows = grid_intersect((row-1..row+1).to_a)
+    adj_cols = grid_intersect((col-1..col+1).to_a)
+    adj_coords = adj_rows.product(adj_cols)
+    # strictly adjacent
+    # adj_coords.delete([row, col])
+    # not needed; when called for adj bomb count,
+    # only called if tile.vaule == :empty
+    adj_coords
   end
 
   def grid_intersect(arr_of_indices)
@@ -69,26 +94,12 @@ class Board
     tiles
   end
 
-  def coords_adj_tiles(pos)
-    row, col = pos
-    adj_rows = grid_intersect((row-1..row+1).to_a)
-    adj_cols = grid_intersect((col-1..col+1).to_a)
-    adj_coords = adj_rows.product(adj_cols)
-    # strictly adjacent
-    adj_coords.delete([row, col])
-    
-    adj_coords
-  end
-
-  def adj_bombs(row, col)
-    pos = row, col
-    adj_coords = coords_adj_tiles(pos)
-    tiles = grid_select(adj_coords)
-    tiles.count { |tile| tile.value == :bomb}
-  end
-
   def count_bombs
     @grid.flatten.count { |el| el.value == :bomb }
+  end
+
+  def count_hidden_squares
+    @grid.flatten.count { |el| el.revealed == true }
   end
 
   def reveal_all
@@ -135,24 +146,30 @@ class Board
   end
 
   def cascade_prep(pos)
-    to_cascade = []
+    # This method returns the coords of all "empty" tiles
+    # adjacent to (and including) tile at pos,
+    # where "empty" means tile.value == 0.
+    # 
+    # This method also reveals all adjacent tiles
+    # which are not bombs.
+    pass_to_cascade = []
     adj_coords = coords_adj_tiles(pos)
     adj_coords.each do |pos|
       row, col = pos
       tile = self[row, col]
       tile.reveal if (tile.value).is_a?(Integer)
-      to_cascade << pos if tile.value == 0
+      pass_to_cascade << pos if tile.value == 0
     end
 
-    to_cascade
+    pass_to_cascade
   end
 
   def cascade(pos)
-    # debugger
     to_cascade = [pos]
     completed = []
 
-    to_cascade.each do |el|
+    while !to_cascade.empty?
+      el = to_cascade.shift
       next if completed.include?(el)
       adj_emptys = cascade_prep(el)
       to_cascade += adj_emptys
