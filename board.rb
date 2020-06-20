@@ -110,7 +110,7 @@ class Board
       tile = self[row, col]
       tile.reveal
     end
-    self.render
+    # self.render
   end
 
   def reveal_all

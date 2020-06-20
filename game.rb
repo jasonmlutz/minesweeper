@@ -6,19 +6,28 @@ class Game
   end
 
   def play_turn
-    board.render
+    system("clear")
+    @board.render
     puts "enter a position to reveal e.g. 0,4"
     pos = (gets.chomp).split(",")
-    success = @board.reveal(pos)
+    pos.map! { |el| el.to_i }
+    @board.reveal(pos)
   end
 
   def play_game
-    until won? || lost?
+    until @board.won? || @board.lost?
       play_turn
     end
-    board.render
-    puts "you win!" if won?
-    puts "you lose!" if lost?
+    system("clear")
+    if @board.won?
+      @board.render
+      puts "you win!\n"
+    end
+    if @board.lost?
+      @board.cheat
+      @board.render
+      puts "you lose!\n"
+    end
   end
-  
+
 end
