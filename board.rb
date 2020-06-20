@@ -137,19 +137,17 @@ class Board
       row.each do |tile|
         # TODO cases?
         if tile.revealed
-          if (tile.value).is_a?(Integer)
-            output << (tile.value > 0 ? tile.value : " ")
-          elsif tile.value == :bomb
+          case tile.value
+          when 0
+            output << " "
+          when :bomb
             output << "B"
+          else
+            output << tile.value
           end
         else
           output << "*"
         end
-        # output << "*" if !tile.revealed
-        # output << 
-        # if tile.revealed && tile.value != 0
-        #   tile.value == :bomb ? output << "B" : output << tile.value
-        # else
       end
       puts "|" + output.join("|") + "|"
       puts hline
@@ -191,6 +189,14 @@ class Board
   def won?
     count_bombs == count_hidden_squares
   end
+  
+  def lost?
+    @bomb_locations.any? do |pos|
+      row, col = pos
+      tile = self[row, col]
+      tile.revealed == true
+    end
+  end
 
   def reveal(pos)
     # TODO give "error" message if tile to be revealed is
@@ -201,9 +207,9 @@ class Board
     value = tile.value
     case value
     when :bomb
-      return false
+      tile.value = "X"
     when 0
-      cascade[pos]
+      cascade(pos)
       return true
     else
       return true
