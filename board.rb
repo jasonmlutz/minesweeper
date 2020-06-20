@@ -7,6 +7,7 @@ class Board
   def initialize(size = 10)
     @size = size
     @grid = populate(blank_grid)
+    include_adj
   end
 
   def blank_grid
@@ -28,7 +29,6 @@ class Board
   end
 
   def include_adj
-    # debugger
     indices = (0...@size).to_a
     coords = indices.product(indices)
     coords.each do |coord|
@@ -36,7 +36,6 @@ class Board
       tile = self[row, col]
       if tile.value == :empty
         tile.value = adj_bombs(row, col)
-        puts "found one!"
       end 
     end
   end
